@@ -2,185 +2,133 @@
 
 ## Project Overview
 
-This project analyzes the relationship between students' social media usage,
-lifestyle factors, stress levels, and mental health.
-
-The project uses machine learning classification models to predict students'
-mental health category as:
+This project analyzes the relationship between students' social media usage, lifestyle factors, stress levels, and mental health. Machine learning classification models predict a student's mental health status into one of three categories:
 
 - Fair
 - Good
 - Poor
 
-The project includes Exploratory Data Analysis (EDA), data preprocessing,
-three machine learning algorithms, hyperparameter tuning, and model
-evaluation.
+The repository covers the complete end-to-end pipeline: Exploratory Data Analysis (EDA), feature engineering, data preprocessing, model training across three algorithms, hyperparameter tuning, and cross-model evaluation.
 
 ---
 
-## Dataset
+## Dataset & Mental Health Classification
 
-The dataset used in this project is:
-
-**Student Social Media And Mental Health Impact**
-
-The dataset contains information related to students' social media usage,
-sleep, study habits, physical activity, stress level, and mental health score.
-
-The original dataset is stored in:
-
-```text
+### Dataset Location
 data/
 └── Student Social Media And Mental Health Impact.csv
 
-Project Workflow
+### Categorization Logic
+The continuous Mental_Health_Score feature was mapped into three discrete classes:
+
+- Score 0 to 4: Poor
+- Score 4 to 7: Fair
+- Score 7 to 10: Good
+
+Note on Class Imbalance: The target variable distribution is heavily imbalanced; the Poor category contains significantly fewer samples than the Fair and Good categories.
+
+---
+
+## Project Workflow
 
 Dataset
-   ↓
+  ↓
 Exploratory Data Analysis
-   ↓
+  ↓
 Data Preprocessing
-   ↓
+  ↓
 Create Mental Health Categories
-   ↓
+  ↓
 Feature Encoding
-   ↓
-Train/Test Split
-   ↓
+  ↓
+Train / Test Split
+  ↓
 Machine Learning Models
-   ├── Logistic Regression
-   ├── Random Forest
-   └── XGBoost
-   ↓
+  ├── Logistic Regression
+  ├── Random Forest
+  └── XGBoost
+  ↓
 Model Evaluation
-   ↓
+  ↓
 Model Comparison
 
-Mental Health Classification
+---
 
-The original Mental_Health_Score was converted into three categories:
+## Exploratory Data Analysis
 
-Score Range	Category
-0–4	Poor
-4–7	Fair
-7–10	Good
+The primary analysis and preprocessing steps are located in notebooks/01_EDA_Preprocessing.ipynb and include:
 
-The target variable was then encoded for machine learning.
+- Dataset shape and column type inspection
+- Missing-value and duplicate checking
+- Analysis of numerical feature distributions
+- Outlier detection using Z-scores
+- Target distribution analysis and stress-level correlation
 
-The dataset has an imbalanced target distribution, with the Poor category
-having substantially fewer samples than Fair and Good.
+---
 
-Exploratory Data Analysis
+## Machine Learning Models
 
-The EDA includes:
-
-Dataset shape and structure
-Column and data type inspection
-Missing-value checking
-Duplicate checking
-Numerical feature distributions
-Outlier checking using Z-score
-Mental health category distribution
-Stress level distribution across mental health categories
-
-The EDA and preprocessing are available in:
-notebooks/01_EDA_Preprocessing.ipynb
-
-Machine Learning Models
-1. Logistic Regression
-
-Logistic Regression was used as a baseline classification model.
-
-A pipeline was used with:
-
-StandardScaler
-Logistic Regression
-Balanced class weights
-
-GridSearchCV was used for hyperparameter tuning.
-
-Best parameters:
-
-C = 1
-solver = lbfgs
+1. Logistic Regression (Baseline)
+- Pipeline Setup: Standard scaling, class balancing, lbfgs solver.
+- Tuning: GridSearchCV optimized to C = 1.
 
 2. Random Forest
-
-Random Forest was trained using the Gini criterion.
-
-The model used:
-
-Class-balanced training
-Gini impurity
-GridSearchCV
-5-fold cross-validation
-Macro F1-score for model selection
-
-Best parameters:
-
-n_estimators = 100
-max_depth = None
-min_samples_split = 2
-criterion = gini
+- Pipeline Setup: Gini impurity criterion, class balancing, 5-fold cross-validation.
+- Tuning: GridSearchCV optimized macro F1-score with n_estimators = 100, max_depth = None, and min_samples_split = 2.
 
 3. XGBoost
+- Pipeline Setup: Multiclass classification objective with sample weighting and 5-fold cross-validation.
+- Tuning: GridSearchCV optimized macro F1-score with n_estimators = 200, max_depth = 6, and learning_rate = 0.01.
 
-XGBoost was trained as a multiclass classification model.
+---
 
-The model used:
+## Model Evaluation & Comparison
 
-Multi-class classification
-Balanced sample weights
-GridSearchCV
-5-fold cross-validation
-Macro F1-score for model selection
+### Overall Performance
 
-Best parameters:
+- Logistic Regression:
+  * Accuracy: 73%
+  * Macro Precision: 0.60
+  * Macro Recall: 0.82
+  * Macro F1: 0.60
 
-n_estimators = 200
-max_depth = 6
-learning_rate = 0.01
-Model Results
+- Random Forest (Best Performing):
+  * Accuracy: 90%
+  * Macro Precision: 0.76
+  * Macro Recall: 0.78
+  * Macro F1: 0.77
 
-The models were evaluated using:
+- XGBoost:
+  * Accuracy: 81%
+  * Macro Precision: 0.63
+  * Macro Recall: 0.82
+  * Macro F1: 0.65
 
-Accuracy
-Precision
-Recall
-F1-score
-Macro F1-score
-Classification report
-Overall Comparison
-Model	Accuracy	Macro Precision	Macro Recall	Macro F1
-Logistic Regression	73%	0.60	0.82	0.60
-Random Forest	90%	0.76	0.78	0.77
-XGBoost	81%	0.63	0.82	0.65
-Performance on the Poor Class
+### Class-Specific Performance (Poor Class)
 
-Because the Poor class has fewer samples, its performance is particularly important.
+- Logistic Regression:
+  * Precision: 0.11
+  * Recall: 0.87
+  * F1-Score: 0.20
 
-Model	Poor Precision	Poor Recall	Poor F1
-Logistic Regression	0.11	0.87	0.20
-Random Forest	0.52	0.52	0.52
-XGBoost	0.17	0.78	0.28
-Results and Conclusion
+- Random Forest:
+  * Precision: 0.52
+  * Recall: 0.52
+  * F1-Score: 0.52
 
-Among the three models, Random Forest achieved the best overall performance.
+- XGBoost:
+  * Precision: 0.17
+  * Recall: 0.78
+  * F1-Score: 0.28
 
-It achieved:
+### Key Takeaways
+- Random Forest achieved the highest overall performance across all major metrics (90% accuracy, 0.77 Macro F1).
+- The Poor category was challenging for all models due to data scarcity, but Random Forest balanced precision and recall far better than Logistic Regression or XGBoost, which suffered from high false-positive rates on minority samples.
 
-90% accuracy
-0.77 macro F1-score
-0.52 F1-score for the Poor class
+---
 
-Random Forest performed better overall than Logistic Regression and XGBoost,
-especially in balancing performance across the three mental health categories.
+## Repository Structure
 
-The results also show that the Poor category is more difficult to predict
-because it contains substantially fewer samples than the Fair and Good
-categories.
-
-Project Structure
 student-mental-health-ml/
 │
 ├── README.md
@@ -203,73 +151,21 @@ student-mental-health-ml/
     ├── y_train.csv
     ├── y_test.csv
     └── model_comparison.csv
-Technologies Used
-Python
-Pandas
-NumPy
-Matplotlib
-Seaborn
-SciPy
-Scikit-learn
-XGBoost
-Jupyter Notebook
-How to Run the Project
-1. Clone the repository
-git clone <your-github-repository-url>
-2. Open the project folder
-cd student-mental-health-ml
-3. Install the required packages
-pip install -r requirements.txt
-4. Open the notebooks
-
-Run the notebooks in the following order:
-
-01_EDA_Preprocessing.ipynb
-02_Logistic_Regression.ipynb
-03_Random_Forest.ipynb
-04_XGBoost.ipynb
-05_Model_Comparison.ipynb
-Authors
-
-This project was developed as a collaborative machine learning project.
-
-
 
 ---
 
+## Technologies Used
 
-## Step 2 — Save it
-
-
-Press:
-
-
-**Ctrl + S**
-
-
-Then click the `README.md` file in VS Code and check that it looks nicely formatted.
+- Languages: Python
+- Data Processing & Analytics: Pandas, NumPy, SciPy
+- Visualization: Matplotlib, Seaborn
+- Machine Learning: Scikit-learn, XGBoost
+- Environment: Jupyter Notebook
 
 
----
-
-
-## Step 3 — One thing we should fix before GitHub
-
-
-I want to make one small improvement before you push.
-
-
-Your README says:
-
-
-```text
-Score 0–4 → Poor
-4–7 → Fair
-7–10 → Good
-
-The original `Mental_Health_Score` was grouped into three categories using
-score ranges defined in the preprocessing notebook:
-
-- Poor
-- Fair
-- Good
+4. Run the notebooks in sequential order:
+   1. 01_EDA_Preprocessing.ipynb
+   2. 02_Logistic_Regression.ipynb
+   3. 03_Random_Forest.ipynb
+   4. 04_XGBoost.ipynb
+   5. 05_Model_Comparison.ipynb
